@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <string.h>
 #include "BBTimer.hpp"
+#include <mbed.h> // Necesario para acceder a las funciones nativas del nRF52
 
 // put variables here:
 String cmd;
@@ -8,11 +9,8 @@ int raw_adc;
 int seconds;
 bool imprimirADC;
 float duty;
-unsigned long tprev_ON;
-unsigned long tprev_OFF;
-int t_ON;
-int t_OFF;
-int estado = 0;
+// Creamos un objeto PwmOut.
+mbed::PwmOut pwm_pin(digitalPinToPinName(2));
 
 BBTimer my_t0(BB_TIMER0);
 
@@ -31,6 +29,8 @@ void setup()
   Serial.begin(115200);
   pinMode(2, OUTPUT);
   my_t0.setupTimer(1000,t0CallBack);
+  pwm_pin.period(0.0002f); 
+  pwm_pin.write(0.0f);
 }
 
 void loop()
@@ -49,43 +49,9 @@ void loop()
     Serial.println(raw_adc);
     imprimirADC=false;
   }
-  
-
-  unsigned long tactual = micros();
-  t_ON = duty * 200;
-  t_OFF = 200 - t_ON;
-  if (t_ON > 0)
-  {
-    switch (estado)
-    {
-    case 0:
-      digitalWrite(2, HIGH);
-      tprev_ON = tactual;
-      estado = 1;
-      break;
-    case 1:
-      if (tactual - tprev_ON >= t_ON)
-      {
-        estado = 2;
-      }
-      break;
-    case 2:
-      digitalWrite(2, LOW);
-      tprev_OFF = tactual;
-      estado = 3;
-      break;
-    case 3:
-      if (tactual - tprev_OFF >= t_OFF)
-      {
-        estado = 0;
-      }
-      break;
-    }
-  }
-  else
-  {
-    digitalWrite(2, LOW);
-  }
+  raw_adc = analogRead(A0);
+  pwm_pin.write(duty);
+  delay(10);
 }
 
 // put function definitions here:
