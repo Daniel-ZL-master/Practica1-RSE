@@ -7,6 +7,7 @@ void onReceiveEvent(int q);
 void setup()
 {
   // put your setup code here, to run once:
+  pinMode(LED_BUILTIN,OUTPUT);
   Wire.begin(8); //Unirse al bus con la direccion 8
   Wire.onReceive(onReceiveEvent);
 }

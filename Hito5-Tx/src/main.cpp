@@ -3,10 +3,11 @@
 
 int estado = 0;
 char str[100];
-
+int i = 0;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  Wire.setPins(8,9);
   Wire.begin(); // Sin dirección, somos writer
 }
 
@@ -19,7 +20,7 @@ void loop() {
     estado = 1;
     break;
   case 1:
-    int i = 0;
+    i=0;
     while (Serial.available() > 0)
     {
       str[i++] = Serial.read();
