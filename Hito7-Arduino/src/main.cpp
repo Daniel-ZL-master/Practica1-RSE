@@ -3,7 +3,8 @@
 #include <Arduino_LSM9DS1.h>
 
 // Estructura del paquete de I2C (21 bytes en total)
-struct __attribute__((packed)) PaqueteDatos {
+struct __attribute__((packed)) PaqueteDatos
+{
   byte id_paquete;
   float valores[5];
 };
